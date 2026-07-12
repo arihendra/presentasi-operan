@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Presentasi Urutan Lapag dan Operan</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Presentasi Urutan Lapag dan Operan</h1>
+      <p>Aplikasi web statis - GitHub Pages</p>
+    </div>
+    <button id="adminOpenBtn" class="admin-button">👤 Admin</button>
+  </header>
+
+  <main class="page">
+    <section class="panel output-panel">
+      <div class="panel-heading">
+        <div>
+          <h2 id="outputTitle">Presentasi Urutan Lapag dan Operan</h2>
+          <small>Geser baris untuk mengubah urutan. Klik dua kali untuk menghapus.</small>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="saveFileBtn" class="btn cyan">Save .urutan</button>
+        <button id="loadFileBtn" class="btn gray">Load</button>
+        <button id="clearBtn" class="btn red">Clear</button>
+        <button id="jpgBtn" class="btn green">Export JPG</button>
+        <button id="pdfBtn" class="btn purple">Export PDF</button>
+        <button id="excelBtn" class="btn orange">Export Excel</button>
+        <input id="loadFileInput" type="file" accept=".urutan,.json" hidden>
+      </div>
+
+      <div class="toolbar compact">
+        <label>Jenis
+          <select id="modeSelect">
+            <option value="presentasi">Presentasi</option>
+            <option value="operan">Operan</option>
+          </select>
+        </label>
+        <label>Judul
+          <input id="titleInput" value="Presentasi Urutan Lapag dan Operan">
+        </label>
+        <label>Tanggal
+          <input id="dateInput" type="date">
+        </label>
+        <label>Warna tabel
+          <select id="stripeMode">
+            <option value="blue">Biru selang-seling</option>
+            <option value="gray">Abu-abu selang-seling</option>
+            <option value="none">Tanpa selang-seling</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="exportArea" class="export-area">
+        <div class="export-header">
+          <h2 id="exportTitle">Presentasi Urutan Lapag dan Operan</h2>
+          <div id="exportDate"></div>
+        </div>
+
+        <table id="orderTable">
+          <thead>
+            <tr>
+              <th class="col-no">No</th>
+              <th class="col-initial">Inisial</th>
+              <th>Nama</th>
+              <th class="col-role">Opt</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="orderBody"></tbody>
+        </table>
+        <div id="emptyState" class="empty-state">Belum ada nama yang dipilih.</div>
+      </div>
+    </section>
+
+    <section class="panel source-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Masukkan Nama Residen</h2>
+          <small>Klik nama satu per satu atau gunakan Add All.</small>
+        </div>
+      </div>
+
+      <div class="tab-row">
+        <button class="tab active" data-tab="junior">R1 - R4</button>
+        <button class="tab" data-tab="senior">R5 - R7</button>
+      </div>
+
+      <div class="toolbar compact">
+        <input id="searchInput" type="search" placeholder="Cari nama atau kelompok...">
+      </div>
+
+      <div id="residentGroups"></div>
+    </section>
+
+    <section class="panel guide-panel">
+      <div class="panel-heading">
+        <h2>Panduan Operan</h2>
+      </div>
+      <div class="guide-grid">
+        <div><b>R1</b><span>Operator lapag R1-R4 ditempatkan paling atas.</span></div>
+        <div><b>R2</b><span>Urutkan berdasarkan jam tindakan, kemudian asisten dan pengirim laporan.</span></div>
+        <div><b>R3</b><span>Operator ditempatkan di atas, disusul jaga ahli dan pengirim laporan.</span></div>
+        <div><b>R4</b><span>Operator di atas, kemudian tindakan, lalu pengirim laporan.</span></div>
+        <div><b>R5</b><span>Jaga tindakan frozen di atas, disusul jaga tindakan lain.</span></div>
+        <div><b>R6</b><span>Urutan dapat disesuaikan berdasarkan rumah sakit atau rotasi.</span></div>
+        <div><b>R7</b><span>Sesuaikan dengan kebutuhan operan dan kebijakan unit.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Data admin tersimpan hanya di browser/perangkat yang sedang digunakan.
+  </footer>
+
+  <div id="loginModal" class="modal hidden">
+    <div class="modal-card small-modal">
+      <button class="modal-close" data-close="loginModal">×</button>
+      <h2>Login Admin</h2>
+      <p class="muted">Masukkan password admin untuk mengelola data residen.</p>
+      <label>Password
+        <input id="adminPasswordInput" type="password" placeholder="Password admin">
+      </label>
+      <div id="loginError" class="error-text"></div>
+      <div class="modal-actions">
+        <button id="loginBtn" class="btn cyan">Masuk</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal" class="modal hidden">
+    <div class="modal-card admin-modal-card">
+      <button class="modal-close" data-close="adminModal">×</button>
+      <div class="admin-head">
+        <div>
+          <h2>Data Residen</h2>
+          <p class="muted">Tambah, edit, dan hapus data. Perubahan tersimpan di browser ini.</p>
+        </div>
+        <div class="toolbar">
+          <button id="addResidentBtn" class="btn green">➕ Tambah Residen</button>
+          <button id="exportResidentBtn" class="btn orange">Export Data</button>
+          <button id="importResidentBtn" class="btn gray">Import Data</button>
+          <button id="resetResidentBtn" class="btn red">Reset Awal</button>
+          <input id="importResidentInput" type="file" accept=".json" hidden>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Kelompok</th>
+              <th>Inisial</th>
+              <th>Nama</th>
+              <th>Edit</th>
+              <th>Hapus</th>
+            </tr>
+          </thead>
+          <tbody id="adminResidentBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button id="saveResidentBtn" class="btn cyan">💾 Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="residentFormModal" class="modal hidden">
+    <div class="modal-card small-modal">
+      <button class="modal-close" data-close="residentFormModal">×</button>
+      <h2 id="residentFormTitle">Tambah Residen</h2>
+      <label>Kelompok
+        <select id="residentGroupInput">
+          <option>R1</option><option>R2</option><option>R3</option><option>R4</option>
+          <option>R5</option><option>R6</option><option>R7</option>
+        </select>
+      </label>
+      <label>Inisial
+        <input id="residentInitialInput" maxlength="6" placeholder="Contoh: TF">
+      </label>
+      <label>Nama
+        <input id="residentNameInput" placeholder="Nama lengkap">
+      </label>
+      <div id="residentFormError" class="error-text"></div>
+      <div class="modal-actions">
+        <button id="residentFormSaveBtn" class="btn cyan">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
