@@ -13,7 +13,7 @@ const RESIDENT_DATA = {
       "name": "PUPUT FITRIANA DEWI"
     },
     {
-      "initial": "RT",
+      "initial": "RR",
       "name": "RATI RIESTYANINGRUM"
     },
     {
