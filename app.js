@@ -1,6 +1,6 @@
 
 const DEFAULT_ADMIN_PASSWORD = "admin123";
-const STORAGE_KEY = "resident-data-v4-r1-r7-39";
+const STORAGE_KEY = "resident-data-v5-r1-r7-39";
 const ADMIN_SESSION_KEY = "admin-session-v1";
 
 const state = {
@@ -110,6 +110,7 @@ function addPerson(group, person){
     initial: person.initial,
     name: person.name,
     role: "",
+    rowColor: "light",
     note: ""
   });
   renderOrder();
@@ -131,23 +132,28 @@ function renderOrder(){
   state.order.forEach((item,index) => {
     const tr = document.createElement("tr");
     tr.dataset.index = index;
+    tr.className = `row-color-${item.rowColor || "light"}`;
     tr.innerHTML = `
       <td style="text-align:center">${index+1}</td>
       <td style="text-align:center;font-weight:700">${esc(item.initial)}</td>
       <td>${esc(item.name)}</td>
       <td>
-        <div class="opt-controls">
-          <select class="cell-input role-input" aria-label="Peran">
-            <option value=""></option>
-            <option value="Moderator">Moderator</option>
-            <option value="Operator">Operator</option>
-            <option value="Presenter">Presenter</option>
-            <option value="Asisten">Asisten</option>
-            <option value="Jaga">Jaga</option>
-            <option value="Tindakan">Tindakan</option>
-            <option value="Frozen">Frozen</option>
-          </select>
-          <button class="row-delete-btn" type="button" title="Hapus residen dari daftar">×</button>
+        <select class="cell-input role-input" aria-label="Peran">
+          <option value=""></option>
+          <option value="Moderator">Moderator</option>
+          <option value="Operator">Operator</option>
+          <option value="Presenter">Presenter</option>
+          <option value="Asisten">Asisten</option>
+          <option value="Frozen">Frozen</option>
+          <option value="Jaga">Jaga</option>
+          <option value="Tindakan">Tindakan</option>
+        </select>
+      </td>
+      <td>
+        <div class="row-color-controls" aria-label="Pilihan warna baris">
+          <button class="color-choice light-choice" type="button" title="Biru terang" aria-label="Biru terang"></button>
+          <button class="color-choice dark-choice" type="button" title="Biru gelap" aria-label="Biru gelap"></button>
+          <button class="row-delete-btn" type="button" title="Hapus residen dari daftar" aria-label="Hapus">×</button>
         </div>
       </td>
       <td>
@@ -156,6 +162,21 @@ function renderOrder(){
     `;
     tr.querySelector(".role-input").value = item.role || "";
     tr.querySelector(".role-input").onchange = e => updateItem(index,"role",e.target.value);
+
+    const currentColor = item.rowColor || "light";
+    tr.querySelector(".light-choice").classList.toggle("selected", currentColor === "light");
+    tr.querySelector(".dark-choice").classList.toggle("selected", currentColor === "dark");
+
+    tr.querySelector(".light-choice").onclick = e => {
+      e.stopPropagation();
+      state.order[index].rowColor = "light";
+      renderOrder();
+    };
+    tr.querySelector(".dark-choice").onclick = e => {
+      e.stopPropagation();
+      state.order[index].rowColor = "dark";
+      renderOrder();
+    };
     tr.querySelector(".row-delete-btn").onclick = e => {
       e.stopPropagation();
       removeItem(index);
@@ -176,12 +197,6 @@ function syncHeader(){
   $("outputTitle").textContent = title;
   $("exportTitle").textContent = title;
   $("exportDate").textContent = formatDate($("dateInput").value);
-}
-
-function applyStripeMode(){
-  const area = $("exportArea");
-  area.classList.remove("stripe-blue","stripe-gray","stripe-none");
-  area.classList.add("stripe-" + ($("stripeMode").value || "blue"));
 }
 
 function saveProject(){
@@ -287,11 +302,12 @@ function exportExcel(){
     Nama: item.name,
     Kelompok: item.group,
     Opt: item.role,
+    Warna: item.rowColor === "dark" ? "Biru Gelap" : "Biru Terang",
     Keterangan: item.note
   }));
-  const ws = XLSX.utils.json_to_sheet(rows, {header:["No","Inisial","Nama","Kelompok","Opt","Keterangan"]});
+  const ws = XLSX.utils.json_to_sheet(rows, {header:["No","Inisial","Nama","Kelompok","Opt","Warna","Keterangan"]});
   ws["!cols"] = [
-    {wch:6},{wch:10},{wch:28},{wch:12},{wch:14},{wch:35}
+    {wch:6},{wch:10},{wch:28},{wch:12},{wch:14},{wch:14},{wch:35}
   ];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, state.mode === "operan" ? "Operan" : "Presentasi");
@@ -452,7 +468,6 @@ document.querySelectorAll("[data-close]").forEach(button => {
 $("searchInput").oninput = renderResidents;
 $("titleInput").oninput = syncHeader;
 $("dateInput").onchange = syncHeader;
-$("stripeMode").onchange = applyStripeMode;
 $("modeSelect").onchange = event => {
   state.mode = event.target.value;
   const defaultTitle = "Presentasi Urutan Lapag dan Operan";
@@ -495,6 +510,5 @@ $("resetResidentBtn").onclick = resetResidentData;
 loadResidentData();
 $("dateInput").value = todayISO();
 syncHeader();
-applyStripeMode();
 renderResidents();
 renderOrder();

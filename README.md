@@ -1,24 +1,17 @@
-# Presentasi Urutan Lapag dan Operan — Versi 4
+# Presentasi Urutan Lapag dan Operan — Versi 5
 
-Revisi:
-- Data 39 residen, kelompok R1-R7, sesuai file Excel.
-- Tombol silang merah (×) tersedia pada setiap baris.
-- Pilihan Opt: Moderator, Operator, Presenter.
-- Nilai Opt hanya disertakan pada export Excel; tidak tampil pada JPG/PDF.
-- Judul aplikasi: Presentasi Urutan Lapag dan Operan.
+Tabel terdiri atas 6 kolom:
+No, Inisial, Nama, Opt, Warna, Keterangan.
 
-Password Admin: `admin123`
+Opt menggunakan dropdown:
+Moderator, Operator, Presenter, Asisten, Frozen, Jaga, Tindakan.
 
-Timpa file index.html, style.css, app.js, data.js, dan README.md di repository GitHub.
+Warna per baris menggunakan tiga ikon:
+- kotak biru terang
+- kotak biru gelap
+- tanda silang merah untuk menghapus satu residen
 
+Menu warna tabel global sudah dihapus.
 
-## Koreksi versi 4.1
-
-Opsi pada kolom Opt kini lengkap:
-- Moderator
-- Operator
-- Presenter
-- Asisten
-- Jaga
-- Tindakan
-- Frozen
+JPG/PDF hanya menampilkan No, Inisial, dan Nama.
+Excel menampilkan seluruh data termasuk Opt, Warna, dan Keterangan.

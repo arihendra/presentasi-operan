@@ -357,24 +357,6 @@ footer{
   text-transform:uppercase;
   font-weight:500;
 }
-#orderTable tbody tr:nth-child(odd){
-  background:#d9e2f3;
-}
-#orderTable tbody tr:nth-child(even){
-  background:#adc3e5;
-}
-#exportArea.stripe-gray #orderTable tbody tr:nth-child(odd){
-  background:#f2f2f2;
-}
-#exportArea.stripe-gray #orderTable tbody tr:nth-child(even){
-  background:#d8d8d8;
-}
-#exportArea.stripe-none #orderTable tbody tr{
-  background:#fff;
-}
-#exportArea.stripe-none #orderTable th{
-  background:#e4e4e4;
-}
 #exportArea.exporting .export-header{
   display:none;
 }
@@ -403,3 +385,56 @@ footer{
 .row-delete-btn{border:0;background:transparent;color:#e00000;font-size:22px;line-height:1;font-weight:900;cursor:pointer;padding:0 3px}
 .row-delete-btn:hover{color:#a00000;transform:scale(1.12)}
 #exportArea.exporting .opt-controls{display:none}
+
+/* Versi 5: warna dipilih per baris */
+:root{
+  --lapag-blue-light:#d9e2f3;
+  --lapag-blue-dark:#adc3e5;
+}
+.col-color{width:125px}
+#orderTable tbody tr.row-color-light{background:var(--lapag-blue-light)}
+#orderTable tbody tr.row-color-dark{background:var(--lapag-blue-dark)}
+.row-color-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.color-choice{
+  width:30px;
+  height:30px;
+  border:2px solid #777;
+  border-radius:5px;
+  cursor:pointer;
+  padding:0;
+}
+.light-choice{background:var(--lapag-blue-light)}
+.dark-choice{background:var(--lapag-blue-dark)}
+.color-choice.selected{
+  outline:3px solid #2f5f9f;
+  outline-offset:1px;
+}
+.row-delete-btn{
+  border:0;
+  background:transparent;
+  color:#d60000;
+  font-size:30px;
+  line-height:1;
+  font-weight:900;
+  cursor:pointer;
+  padding:0 3px;
+}
+.row-delete-btn:hover{color:#a00000;transform:scale(1.08)}
+
+/* JPG/PDF: hanya No, Inisial, Nama */
+#exportArea.exporting th:nth-child(4),
+#exportArea.exporting th:nth-child(5),
+#exportArea.exporting th:nth-child(6),
+#exportArea.exporting td:nth-child(4),
+#exportArea.exporting td:nth-child(5),
+#exportArea.exporting td:nth-child(6){
+  display:none;
+}
+#exportArea.exporting #orderTable th:nth-child(1){width:12%}
+#exportArea.exporting #orderTable th:nth-child(2){width:18%}
+#exportArea.exporting #orderTable th:nth-child(3){width:70%}
